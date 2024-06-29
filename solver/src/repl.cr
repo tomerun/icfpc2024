@@ -3,6 +3,8 @@ require "common"
 
 def get(api, input)
   prog = api.send(input)
+  vars_idx = VarsIdx.new
+  prog.rename_vars(vars_idx)
   prog.print(STDOUT, 0)
   while !prog.is_a?(PrimitiveT)
     puts "----eval----"

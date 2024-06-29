@@ -13,6 +13,7 @@ class API
     puts input
     header = HTTP::Headers{"Authorization" => "Bearer #{TOKEN}"}
     res = @client.post("/communicate", headers: header, body: input)
+    puts res.body
     parser = Parser.new(res.body)
     return parser.parse
   end

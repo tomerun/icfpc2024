@@ -31,7 +31,7 @@ class VarsIdx
   property :map, :idx
 
   def initialize
-    @map = Hash(Int64, Int64).new
+    @map = Hash(Int64, Array(Int64)).new { |h, k| h[k] = [] of Int64 }
     @idx = 0i64
   end
 end
@@ -50,19 +50,17 @@ class CloneCtx
 
   def initialize(@exist : Set(Int64))
     @map = Hash(Int64, Int64).new
-    @max_key = @exist.max
   end
 
   def get(vi : Int64)
     if @map.has_key?(vi)
       @map[vi]
     elsif @exist.includes?(vi)
-      @max_key += 1
-      @map[vi] = @max_key
-      @max_key
+      nv = @exist.max + 1
+      @exist << nv
+      @map[vi] = nv
     else
       @map[vi] = vi
-      vi
     end
   end
 end
@@ -617,7 +615,7 @@ class ApplyT
 
   def eval(ctx)
     puts "eval apply t0:#{@t0} t1:#{@t1}"
-    self.print(STDOUT, 0)
+    # self.print(STDOUT, 0)
     lambda = @t0
     while !lambda.is_a?(LambdaT)
       lambda = lambda.eval(ctx)
@@ -656,11 +654,11 @@ class LambdaT
   end
 
   def apply(ctx, term : Term)
-    ctx.bounds[vi] = term
+    ctx.bounds[@vi] = term
     puts "apply lambda t0:#{@t0} ctx:#{ctx}"
-    self.print(STDOUT, 0)
+    # self.print(STDOUT, 0)
     ret = @t0.substitute(@vi, term, ctx)
-    ret.print(STDOUT, 0)
+    # ret.print(STDOUT, 0)
     puts "ctx delete #{vi}"
     ctx.bounds.delete(vi)
     ret
@@ -669,16 +667,18 @@ class LambdaT
   def rename_vars(idx)
     vi = @vi
     idx.idx += 1
-    idx.map[vi] = idx.idx
+    idx.map[vi] << idx.idx
     @vi = idx.idx
     @t0.rename_vars(idx)
-    idx.map.delete(vi)
+    idx.map[vi].pop
   end
 
   def substitute(vi, term, ctx)
-    ctx.unbounds << @vi
-    @t0 = @t0.substitute(vi, term, ctx)
-    ctx.unbounds.delete(@vi)
+    if @vi != vi
+      ctx.unbounds << @vi
+      @t0 = @t0.substitute(vi, term, ctx)
+      ctx.unbounds.delete(@vi)
+    end
     self
   end
 
@@ -705,7 +705,7 @@ class VarT
   end
 
   def rename_vars(idx)
-    @vi = idx.map.fetch(@vi, 1i64 << 30)
+    @vi = idx.map[@vi][-1]
   end
 
   def substitute(vi, term, ctx)
