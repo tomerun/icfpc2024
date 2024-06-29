@@ -203,7 +203,7 @@ class StringT
   end
 
   def print(io, depth)
-    io << "  " * depth << "\"" << @s << "\"\n"
+    io << "  " * depth << "\"" << @s.gsub("\n", "\\n") << "\"\n"
   end
 end
 
@@ -293,12 +293,16 @@ class I2ST
   end
 
   def self.convert(v : BigInt | Int64)
-    s = [] of Char
-    while v > 0
-      s << STR_TBL[v % 94]
-      v //= 94
+    if v == 0
+      StringT.new(STR_TBL[0].to_s, true)
+    else
+      s = [] of Char
+      while v > 0
+        s << STR_TBL[v % 94]
+        v //= 94
+      end
+      StringT.new(s.reverse.join, true)
     end
-    StringT.new(s.reverse.join, true)
   end
 
   def to_s(io)
@@ -658,11 +662,11 @@ class LambdaT
 
   def apply(ctx, term : Term)
     ctx.bounds[@vi] = term
-    puts "apply lambda t0:#{@t0}"
+    # puts "apply lambda t0:#{@t0}"
     # self.print(STDOUT, 0)
     ret = @t0.substitute(@vi, term, ctx)
     # ret.print(STDOUT, 0)
-    puts "ctx delete #{vi}"
+    # puts "ctx delete #{vi}"
     ctx.bounds.delete(vi)
     ret
   end
@@ -713,7 +717,7 @@ class VarT
 
   def substitute(vi, term, ctx)
     if @vi == vi
-      puts "substitute var #{vi}"
+      # puts "substitute var #{vi}"
       cctx = CloneCtx.new(ctx.unbounds + ctx.bounds.keys.to_set)
       term.clone(cctx)
     else
