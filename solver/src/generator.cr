@@ -3,13 +3,26 @@ require "common"
 
 def parse(tokens, pos)
   token = tokens[pos]
-  puts "pos:#{pos} token:#{token}"
+  # puts "pos:#{pos} token:#{token}"
   pos += 1
   case token
   when "apply"
     t0, pos = parse(tokens, pos)
     t1, pos = parse(tokens, pos)
     return ApplyT.new(t0, t1), pos
+  when /^concat\[(\d+)\]$/
+    cnt = $1.to_i64
+    terms = [] of Term
+    cnt.times do
+      t, pos = parse(tokens, pos)
+      terms << t
+    end
+    while terms.size > 1
+      t1 = terms.pop
+      t0 = terms.pop
+      terms << ConcatT.new(t0, t1)
+    end
+    return terms[0], pos
   when /^L\[(\d+)\]$/
     vi = $1.to_i64
     t0, pos = parse(tokens, pos)
@@ -139,7 +152,7 @@ def main
   prog, pos = parse(input, 0)
   assert(pos == input.size)
   puts prog
-  prog.print(STDOUT, 0)
+  # prog.print(STDOUT, 0)
 end
 
 main
