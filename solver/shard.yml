@@ -9,6 +9,8 @@ targets:
     main: src/solver.cr
   evaluator:
     main: src/evaluator.cr
+  repl:
+    main: src/repl.cr
 
 crystal: '>= 1.10.1'
 
