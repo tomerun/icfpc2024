@@ -124,7 +124,7 @@ class TrueT
   include Arity0
 
   def to_s(io)
-    io << true
+    io << "T"
   end
 
   def print(io, depth)
@@ -136,7 +136,7 @@ class FalseT
   include Arity0
 
   def to_s(io)
-    io << false
+    io << "F"
   end
 
   def print(io, depth)
@@ -170,7 +170,7 @@ class IntegerT
   end
 
   def to_s(io)
-    io << @v
+    io << "I" << StringT.convert(I2ST.convert(@v).s)
   end
 
   def print(io, depth)
@@ -199,7 +199,7 @@ class StringT
   end
 
   def to_s(io)
-    io << @s
+    io << "S" << StringT.convert(@s)
   end
 
   def print(io, depth)
@@ -220,7 +220,7 @@ class NegT
   end
 
   def to_s(io)
-    io << "- " << @t
+    io << "U- " << @t
   end
 
   def print(io, depth)
@@ -244,7 +244,7 @@ class NotT
   end
 
   def to_s(io)
-    io << "! " << @t
+    io << "U! " << @t
   end
 
   def print(io, depth)
@@ -271,7 +271,7 @@ class S2IT
   end
 
   def to_s(io)
-    io << "# " << @t
+    io << "U# " << @t
   end
 
   def print(io, depth)
@@ -286,20 +286,23 @@ class I2ST
   def eval(ctx)
     v = @t.eval(ctx)
     if v.is_a?(IntegerT)
-      i = v.v
-      s = [] of Char
-      while i > 0
-        s << STR_TBL[i % 94]
-        i //= 94
-      end
-      StringT.new(s.reverse.join, true)
+      I2ST.convert(v.v)
     else
       self.class.new(v)
     end
   end
 
+  def self.convert(v : BigInt | Int64)
+    s = [] of Char
+    while v > 0
+      s << STR_TBL[v % 94]
+      v //= 94
+    end
+    StringT.new(s.reverse.join, true)
+  end
+
   def to_s(io)
-    io << "$ " << @t
+    io << "U$ " << @t
   end
 
   def print(io, depth)
@@ -330,7 +333,7 @@ class AddT < BinaryIntT
   end
 
   def to_s(io)
-    io << "+ " << @t0 << " " << @t1
+    io << "B+ " << @t0 << " " << @t1
   end
 
   def print(io, depth)
@@ -346,7 +349,7 @@ class SubT < BinaryIntT
   end
 
   def to_s(io)
-    io << "- " << @t0 << " " << @t1
+    io << "B- " << @t0 << " " << @t1
   end
 
   def print(io, depth)
@@ -362,7 +365,7 @@ class MulT < BinaryIntT
   end
 
   def to_s(io)
-    io << "* " << @t0 << " " << @t1
+    io << "B* " << @t0 << " " << @t1
   end
 
   def print(io, depth)
@@ -378,7 +381,7 @@ class DivT < BinaryIntT
   end
 
   def to_s(io)
-    io << "/ " << @t0 << " " << @t1
+    io << "B/ " << @t0 << " " << @t1
   end
 
   def print(io, depth)
@@ -394,7 +397,7 @@ class ModT < BinaryIntT
   end
 
   def to_s(io)
-    io << "% " << @t0 << " " << @t1
+    io << "B% " << @t0 << " " << @t1
   end
 
   def print(io, depth)
@@ -418,7 +421,7 @@ class LessT
   end
 
   def to_s(io)
-    io << "< " << @t0 << " " << @t1
+    io << "B< " << @t0 << " " << @t1
   end
 
   def print(io, depth)
@@ -442,7 +445,7 @@ class GreatT
   end
 
   def to_s(io)
-    io << "> " << @t0 << " " << @t1
+    io << "B> " << @t0 << " " << @t1
   end
 
   def print(io, depth)
@@ -476,7 +479,7 @@ class EqT
   end
 
   def to_s(io)
-    io << "= " << @t0 << " " << @t1
+    io << "B= " << @t0 << " " << @t1
   end
 
   def print(io, depth)
@@ -502,7 +505,7 @@ class OrT
   end
 
   def to_s(io)
-    io << "| " << @t0 << " " << @t1
+    io << "B| " << @t0 << " " << @t1
   end
 
   def print(io, depth)
@@ -528,7 +531,7 @@ class AndT
   end
 
   def to_s(io)
-    io << "& " << @t0 << " " << @t1
+    io << "B& " << @t0 << " " << @t1
   end
 
   def print(io, depth)
@@ -552,7 +555,7 @@ class ConcatT
   end
 
   def to_s(io)
-    io << ". " << @t0 << " " << @t1
+    io << "B. " << @t0 << " " << @t1
   end
 
   def print(io, depth)
@@ -576,7 +579,7 @@ class TakeT
   end
 
   def to_s(io)
-    io << "T " << @t0 << " " << @t1
+    io << "BT " << @t0 << " " << @t1
   end
 
   def print(io, depth)
@@ -600,7 +603,7 @@ class DropT
   end
 
   def to_s(io)
-    io << "D " << @t0 << " " << @t1
+    io << "BD " << @t0 << " " << @t1
   end
 
   def print(io, depth)
@@ -614,7 +617,7 @@ class ApplyT
   include Arity2
 
   def eval(ctx)
-    puts "eval apply t0:#{@t0} t1:#{@t1}"
+    # puts "eval apply t0:#{@t0} t1:#{@t1}"
     # self.print(STDOUT, 0)
     lambda = @t0
     while !lambda.is_a?(LambdaT)
@@ -628,7 +631,7 @@ class ApplyT
   end
 
   def to_s(io)
-    io << "apply " << @t0 << " " << @t1
+    io << "B$ " << @t0 << " " << @t1
   end
 
   def print(io, depth)
@@ -655,7 +658,7 @@ class LambdaT
 
   def apply(ctx, term : Term)
     ctx.bounds[@vi] = term
-    puts "apply lambda t0:#{@t0} ctx:#{ctx}"
+    puts "apply lambda t0:#{@t0}"
     # self.print(STDOUT, 0)
     ret = @t0.substitute(@vi, term, ctx)
     # ret.print(STDOUT, 0)
@@ -683,7 +686,7 @@ class LambdaT
   end
 
   def to_s(io)
-    io << "L[" << @vi << "] " << @t0
+    io << "L" << StringT.convert(I2ST.convert(@vi).s) << " " << @t0
   end
 
   def print(io, depth)
@@ -719,7 +722,7 @@ class VarT
   end
 
   def to_s(io)
-    io << "var[" << @vi << "]"
+    io << "v" << StringT.convert(I2ST.convert(@vi).s)
   end
 
   def print(io, depth)
@@ -760,7 +763,7 @@ class IfT
   end
 
   def to_s(io)
-    io << "if " << @t0 << " " << @t1 << " " << @t2
+    io << "? " << @t0 << " " << @t1 << " " << @t2
   end
 
   def print(io, depth)

@@ -11,6 +11,8 @@ targets:
     main: src/evaluator.cr
   repl:
     main: src/repl.cr
+  generator:
+    main: src/generator.cr
   scoreboard:
     main: src/scoreboard.cr
 
