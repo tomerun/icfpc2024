@@ -11,8 +11,8 @@ targets:
     main: src/evaluator.cr
   repl:
     main: src/repl.cr
-  leaderboard:
-    main: src/leaderboard.cr
+  scoreboard:
+    main: src/scoreboard.cr
 
 dependencies:
   html_builder:
