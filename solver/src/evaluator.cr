@@ -1,7 +1,12 @@
 require "common"
 
 def main
-  parser = Parser.new(STDIN.read_line)
+  if ARGV.empty?
+    input = STDIN.read_line
+  else
+    input = File.read(ARGV[0])
+  end
+  parser = Parser.new(input)
   prog = parser.parse
   vars_idx = VarsIdx.new
   prog.rename_vars(vars_idx)
