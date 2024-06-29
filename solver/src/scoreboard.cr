@@ -83,12 +83,12 @@ def main
   end
   api = API.new
 
-  res = api.send("S" + StringT.convert("get scoreboard")).eval(Ctx.new).to_s
+  res = api.send("S" + StringT.convert("get scoreboard")).eval(Ctx.new).as(StringT).s
   global = Scoreboard.parse(res, "global")
   global.output("#{dir}/global.html", "global")
 
   global.categories.each do |cat|
-    res = api.send("S" + StringT.convert("get scoreboard #{cat}")).eval(Ctx.new).to_s
+    res = api.send("S" + StringT.convert("get scoreboard #{cat}")).eval(Ctx.new).as(StringT).s
     rank = Scoreboard.parse(res, cat)
     rank.output("#{dir}/#{cat}.html", cat)
   end
