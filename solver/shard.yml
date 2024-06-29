@@ -11,6 +11,12 @@ targets:
     main: src/evaluator.cr
   repl:
     main: src/repl.cr
+  leaderboard:
+    main: src/leaderboard.cr
+
+dependencies:
+  html_builder:
+    github: crystal-lang/html_builder
 
 crystal: '>= 1.10.1'
 

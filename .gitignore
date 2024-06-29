@@ -1,5 +1,8 @@
 /docs/
-/lib/
+*/lib/.shards.info
+*/lib/html_builder/*
+scoreboard/*/*.html
+problems/
 */bin/
 */.shards/
 *.dwarf

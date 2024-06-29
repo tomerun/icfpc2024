@@ -1,3 +1,4 @@
+require "big"
 STR_TBL     = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`|~ \n"
 STR_TBL_REV = Array.new(STR_TBL.size) { |i| v = STR_TBL.index('!' + i); v ? '!' + v : ' ' }
 
@@ -147,10 +148,14 @@ end
 
 class IntegerT
   include Arity0
-  @v : Int64
+  @v : BigInt
   getter :v
 
-  def initialize(@v : Int64)
+  def initialize(v : Int64)
+    @v = BigInt.new(v)
+  end
+
+  def initialize(@v : BigInt)
   end
 
   def initialize(s : String)
@@ -158,7 +163,7 @@ class IntegerT
   end
 
   def self.parse(s : String)
-    v = 0i64
+    v = BigInt.new(0i64)
     s.each_char do |ch|
       v *= 94
       v += ch - '!'
@@ -200,7 +205,7 @@ class StringT
   end
 
   def print(io, depth)
-    io << "  " * depth << @s << "\n"
+    io << "  " * depth << "\"" << @s << "\"\n"
   end
 end
 
@@ -256,7 +261,7 @@ class S2IT
   def eval(ctx)
     v = @t.eval(ctx)
     if v.is_a?(StringT)
-      i = 0i64
+      i = BigInt.new(0i64)
       v.s.each_char do |ch|
         i *= 94
         i += STR_TBL_REV[ch - '!'] - '!'
@@ -835,9 +840,9 @@ class Parser
         raise "invalid term: #{@terms[@pos - 1]}"
       end
     when 'L'
-      return LambdaT.new(IntegerT.parse(rest), parse)
+      return LambdaT.new(IntegerT.parse(rest).to_i64, parse)
     when 'v'
-      return VarT.new(IntegerT.parse(rest))
+      return VarT.new(IntegerT.parse(rest).to_i64)
     when '?'
       return IfT.new(parse, parse, parse)
     else

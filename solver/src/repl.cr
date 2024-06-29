@@ -1,24 +1,21 @@
+require "api"
 require "common"
-require "http/client"
 
-ENDPOINT = "boundvariable.space"
-TOKEN    = ENV["TOKEN"]
-
-class Solver
-  def initialize
-    @client = HTTP::Client.new(ENDPOINT, tls: true)
+def get(api, input)
+  prog = api.send(input)
+  prog.print(STDOUT, 0)
+  while !prog.is_a?(PrimitiveT)
+    puts "----eval----"
+    ctx = Ctx.new
+    prog = prog.eval(ctx)
+    prog.print(STDOUT, 0)
   end
-
-  def send(input : String)
-    header = HTTP::Headers{"Authorization" => "Bearer #{TOKEN}"}
-    res = @client.post("/communicate", headers: header, body: input)
-    parser = Parser.new(res.body)
-    return parser.parse.to_s
-  end
+  puts "----finish eval----"
+  return prog.to_s
 end
 
 def main
-  solver = Solver.new
+  api = API.new
   while true
     input = [] of Char
     buf = [] of Char
@@ -42,7 +39,7 @@ def main
       input += StringT.convert(buf)
       buf.clear
     end
-    output = solver.send("S" + input.join)
+    output = get(api, "S" + input.join)
     puts output
   end
 end

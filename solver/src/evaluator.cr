@@ -8,9 +8,8 @@ def main
   end
   parser = Parser.new(input)
   prog = parser.parse
-  vars_idx = VarsIdx.new
-  prog.rename_vars(vars_idx)
-  puts vars_idx.idx
+  # vars_idx = VarsIdx.new
+  # prog.rename_vars(vars_idx)
   prog.print(STDOUT, 0)
 
   while true

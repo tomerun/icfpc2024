@@ -1,0 +1,29 @@
+h1 {
+	margin-bottom: 10px;
+}
+table {
+	border-collapse: collapse;
+}
+tr:hover {
+	background-color: lightgray;
+}
+td {
+	border: 1px solid black;
+	padding: 0 2px;
+}
+thead td {
+	background-color: #EEE;
+	text-align: center;
+}
+td.rank {
+	text-align: center;
+}
+td.score {
+	text-align: center;
+}
+td.name {
+	border-right: 3px double black;
+}
+td.category {
+	min-width: 5em;
+}
