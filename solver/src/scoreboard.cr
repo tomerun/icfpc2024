@@ -6,7 +6,7 @@ require "api"
 struct Team
   getter :rank, :name, :scores
 
-  def initialize(@rank : Int32, @name : String, @scores : Array(Int32?))
+  def initialize(@rank : String, @name : String, @scores : Array(String?))
   end
 end
 
@@ -21,9 +21,9 @@ class Scoreboard
     categories = lines[0].strip.split("|")[3...-1].map { |s| s.strip.lchop(kind) }
     teams = lines[2..].select { |v| v.includes?('|') }.map do |line|
       es = line.strip.delete('*').split("|")
-      rank = es[1].to_i
+      rank = es[1]
       name = es[2]
-      scores = es[-categories.size - 1...-1].map { |v| v.strip }.map { |v| v.empty? ? nil : v.to_i }
+      scores = es[-categories.size - 1...-1].map { |v| v.strip }.map { |v| v.empty? ? nil : v }
       Team.new(rank, name, scores)
     end
     Scoreboard.new(categories, teams)
@@ -57,10 +57,10 @@ class Scoreboard
           tbody {
             @teams.each do |team|
               tr {
-                td(class: "rank") { text team.rank.to_s }
+                td(class: "rank") { text team.rank }
                 td(class: "name") { text team.name }
                 team.scores.each do |score|
-                  td(class: "score") { text(score ? score.to_s : "") }
+                  td(class: "score") { text(score ? score : "") }
                 end
               }
             end
