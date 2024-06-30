@@ -1,0 +1,41 @@
+.
+  "solve lambdaman4"
+	apply
+	  apply
+	    L[1]
+	      apply
+	        L[2]
+	          apply
+	            var[1]
+	            apply
+	              var[2]
+	              var[2]
+	        L[2]
+	          apply
+	            var[1]
+	            apply
+	              var[2]
+	              var[2]
+	    L[4]
+	      L[5]
+	        if
+	          =
+	            var[5]
+	            0
+	          " "
+	          .
+	            apply
+	              var[4]
+	              /
+	                var[5]
+	                4
+	            T
+	              2
+	              D
+	              	*
+		                %
+		                  var[5]
+		                  4
+		                2
+	                "LLRRUUDD"
+	  113672725662471966096737721658475543101037266528411183887015880406639738349514384520309098988752882508071846

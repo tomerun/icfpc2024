@@ -2,7 +2,10 @@
 */lib/.shards.info
 */lib/html_builder/*
 scoreboard/*/*.html
-problems/
+problems/*/*
+!problems/*/*.*
+problems/*/.DS_Store
 */bin/
 */.shards/
 *.dwarf
+*/log.txt
