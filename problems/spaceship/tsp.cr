@@ -105,27 +105,36 @@ end
 
 def initial_sol
   n = TARGETS.size - 1
-  used = Array.new(n + 1, false)
-  used[0] = true
-  cy = 0
-  cx = 0
-  ret = [0]
-  n.times do
-    ni = 0
-    min_dist = 1 << 29
-    1.upto(n) do |i|
-      next if used[i]
-      dist = (cx - TARGETS[i][0]).abs + (cy - TARGETS[i][1]).abs
-      if dist < min_dist
-        min_dist = dist
-        ni = i
-      end
-    end
-    ret << ni
-    used[ni] = true
-    cx, cy = TARGETS[ni]
+  ret = (n + 1).times.to_a
+  (n - 1).times do |i|
+    i0 = RND.rand(n - i) + 1
+    i1 = RND.rand(n - i - 1) + 1
+    i1 += 1 if i1 >= i0
+    ret.swap(i0, i1)
   end
   return ret
+
+  # used = Array.new(n + 1, false)
+  # used[0] = true
+  # cy = 0
+  # cx = 0
+  # ret = [0]
+  # n.times do
+  #   ni = 0
+  #   min_dist = 1 << 29
+  #   1.upto(n) do |i|
+  #     next if used[i]
+  #     dist = (cx - TARGETS[i][0]).abs + (cy - TARGETS[i][1]).abs
+  #     if dist < min_dist
+  #       min_dist = dist
+  #       ni = i
+  #     end
+  #   end
+  #   ret << ni
+  #   used[ni] = true
+  #   cx, cy = TARGETS[ni]
+  # end
+  # return ret
 end
 
 main
