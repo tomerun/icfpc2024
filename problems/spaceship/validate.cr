@@ -35,9 +35,14 @@ macro assert(cond, msg = "", caller_line = __LINE__)
   {% end %}
 end
 
-targets = File.read_lines(ARGV[0]).map { |line| line.split.map(&.to_i) }
+input = File.read_lines(ARGV[0]).map { |line| line.split.map(&.to_i) }.uniq
+targets = Hash(Tuple(Int32, Int32), Int32).new
+input.each do |p|
+  idx = targets.size
+  targets[{p[0], p[1]}] = idx
+end
+visited = Array.new(targets.size, false)
 answer = STDIN.read_line
-pi = 0
 cy = 0
 cx = 0
 vy = 0
@@ -49,8 +54,8 @@ answer.chars.each do |ch|
   vx += ax
   cy += vy
   cx += vx
-  if targets[pi][0] == cx && targets[pi][1] == cy
-    pi += 1
+  if targets.has_key?({cx, cy})
+    visited[targets[{cx, cy}]] = true
   end
 end
-puts pi == targets.size ? "ok #{answer.size}" : "ng: #{pi}"
+puts visited.all? ? "ok #{answer.size}" : "ng: #{visited}"
