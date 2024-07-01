@@ -8,4 +8,5 @@ problems/*/.DS_Store
 */bin/
 */.shards/
 *.dwarf
-**/log.txt
+**/log*.txt
+**/input.txt
