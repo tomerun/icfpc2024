@@ -19,8 +19,10 @@ end
 
 def main
   raw = false
+  multiline = false
   parser = OptionParser.new do |parser|
     parser.on("-r", "raw") { raw = true }
+    parser.on("-m", "multiline") { multiline = true }
   end
 
   parser.parse
@@ -31,7 +33,7 @@ def main
       input = [] of Char
       buf = [] of Char
       in_raw = false
-      line = STDIN.read_line
+      line = multiline ? STDIN.gets_to_end : STDIN.read_line
       if raw
         body = line.strip
       else
@@ -74,6 +76,7 @@ def main
       when FalseT
         puts false
       end
+      break if multiline
     end
   rescue IO::EOFError
   end
