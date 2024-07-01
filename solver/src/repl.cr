@@ -35,12 +35,19 @@ def main
       if raw
         body = line.strip
       else
+        in_escape = false
         line.each_char do |ch|
           if ch.ord < 128
             if in_raw
               input << ch
+            elsif !in_escape && ch == '\\'
+              in_escape = true
+            elsif in_escape && ch == 'n'
+              buf << '\n'
+              in_escape = false
             else
               buf << ch
+              in_escape = false
             end
           else
             in_raw = !in_raw
